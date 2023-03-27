@@ -1,0 +1,37 @@
+--- fedora/libreswan.spec       2023-03-26 17:31:17.306852178 +0000
++++ amazon-2023/libreswan.spec  2023-03-27 05:07:07.115022369 +0000
+@@ -6,6 +6,7 @@
+ %global nss_version 3.52
+ %global unbound_version 1.6.6
+ # Libreswan config options
++#/usr/libexec/ipsec/addconn
+ %global libreswan_config \\\
+     LIBEXECDIR=%{_libexecdir}/ipsec \\\
+     MANDIR=%{_mandir} \\\
+@@ -13,7 +14,7 @@
+     INITSYSTEM=systemd \\\
+     PYTHON_BINARY=%{__python3} \\\
+     SHELL_BINARY=%{_bindir}/sh \\\
+-    USE_DNSSEC=true \\\
++    USE_DNSSEC=false \\\
+     USE_LABELED_IPSEC=true \\\
+     USE_LDAP=true \\\
+     USE_LIBCAP_NG=true \\\
+@@ -47,7 +48,7 @@
+ BuildRequires: flex
+ BuildRequires: gcc
+ BuildRequires: hostname
+-BuildRequires: ldns-devel
++#BuildRequires: ldns-devel
+ BuildRequires: libcap-ng-devel
+ BuildRequires: libevent-devel
+ BuildRequires: libseccomp-devel
+@@ -101,6 +102,8 @@
+ %setup -q -n libreswan-%{version}%{?prever}
+ # enable crypto-policies support
+ sed -i "s:#[ ]*include \(.*\)\(/crypto-policies/back-ends/libreswan.config\)$:include \1\2:" configs/ipsec.conf.in
++# fix path
++sed -i "s#/local##g" OBJ.linux.x86_64/initsystems/systemd/ipsec.service
+
+ %build
+ %make_build \
